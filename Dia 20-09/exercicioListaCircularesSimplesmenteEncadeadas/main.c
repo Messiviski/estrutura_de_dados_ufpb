@@ -1,7 +1,6 @@
 #include <stdio.h>
-
-#include "ponto.h"
+#include "lista_circular.h"
 
 int main(void) {
-  return 0;
+  
 }
