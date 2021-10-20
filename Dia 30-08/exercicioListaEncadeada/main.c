@@ -61,5 +61,5 @@ int main(void) {
 
   lst_limpa(&nova_lista);
 
-  if(!nova_lista) printf("Lista limpa com sucesso!\n");
+  if(lst_vazia(nova_lista)) printf("Lista limpa com sucesso!\n");
 }

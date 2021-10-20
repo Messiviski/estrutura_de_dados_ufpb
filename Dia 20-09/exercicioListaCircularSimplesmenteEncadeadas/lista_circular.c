@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "lista_circular.h"
 
 #ifndef _LISTA_CIRCULAR_C
@@ -42,7 +43,7 @@ int lst_tamanho(Lista *lista) {
 }
 
 int lst_insere_inicio(Lista **lista, int info) {
-  if(lst_vazia(lista)) return 0;
+  if(lst_vazia(*lista)) return 0;
 
   Lista *novo_elemento = NULL;
   Lista *aux = *lista;
@@ -67,7 +68,7 @@ int lst_insere_inicio(Lista **lista, int info) {
 }
 
 int lst_insere_fim(Lista **lista, int info) {
-  if(lst_vazia(lista)) return 0;
+  if(lst_vazia(*lista)) return 0;
 
   Lista *novo_elemento = NULL;
   Lista *aux = *lista;
@@ -106,11 +107,16 @@ int lst_existe(Lista *lista, int info) {
 }
 
 void lst_mostra(Lista *lista, char *mensagem) {
+  if(lst_vazia(lista)) return;
+  
+  Lista *aux = lista;
+
   // Mensagem customizada que sera passada pelo funcao principal
   printf("%s ", mensagem);
 
-  while (lista) {
+  while (lista) {    
     printf("%d ", lista->info);
+    if (lista->prox == aux) break;
     lista = lista->prox;
   }
 
@@ -118,20 +124,29 @@ void lst_mostra(Lista *lista, char *mensagem) {
 }
 
 void lst_limpa(Lista **lista) {
+  if(lst_vazia(*lista)) return;
+
   Lista *elemento_lista = NULL;
   Lista *aux = *lista;
+  aux = aux->prox;
 
+  // Will iterate from the
   while (aux) {
+    if(aux == *lista) break;
     elemento_lista = aux->prox;
     free(aux);
 
     aux = elemento_lista;
   }
 
+  free(aux);
+
   *lista = NULL;
 }
 
 int lst_remove_elemento(Lista **lista, int info) {
+  if(lst_vazia(*lista)) return 0;
+
   Lista *elemento_anterior = NULL;
   Lista *aux = *lista;
   int status = 0;
@@ -142,6 +157,8 @@ int lst_remove_elemento(Lista **lista, int info) {
       break;
     }
 
+    if(aux->prox == *lista) break;
+
     elemento_anterior = aux;
     aux = aux->prox;
   }
@@ -151,10 +168,26 @@ int lst_remove_elemento(Lista **lista, int info) {
     // Atribuo o proximo elemento para a lista e remove o elemento atual
     // Caso o proximo seja nulo a lista sera limpa
     if(!elemento_anterior) {
+      Lista *aux2 = *lista;
+
+      // Verifica se a lista tem apenas 1 elemento
+      if(aux2->prox == *lista) {
+        free(aux2);
+        *lista = NULL;
+        return 1;
+      }
+
+      // Aux2 tera que ter a referencia do ultimo elemento para que ele seja atualizado
+      while(aux2) {
+        if(aux2->prox == *lista) break;
+      }
+
       *lista = aux->prox;
+      aux2->prox = *lista;
       free(aux);
       return 1;
     }
+
     // Caso o elemento a ser retirado nao seja o primeiro
     // O elemento anterior ira apontar pra o proximo de aux
     // E depois libera-lo
@@ -166,37 +199,41 @@ int lst_remove_elemento(Lista **lista, int info) {
 }
 
 int lst_insere_ordenado(Lista **lista, int info) {
+  if(lst_vazia(*lista)) return 0;
+
   Lista *novo_elemento = NULL;
   Lista *elemento_anterior = NULL;
+  Lista *ultimo_elemento = *lista;
   Lista *aux = *lista;
 
-  // Verifica se a lista e vazia
-  if(aux) {
-    // Ira percorrer a lista enquanto ela existir
-    // E enquanto a info do elemento for menor que o info passado para funcao
-    while (aux && aux->info < info) {
-      elemento_anterior = aux;
-      aux = aux->prox;
-    }
+  // Pega ultimo elemento
+  while(ultimo_elemento) {
+    if(ultimo_elemento->prox == *lista) break;
+  }
 
-    // Cria novo elemento e atribui o valor recebido na funcao com parametro
-    novo_elemento = (Lista*) malloc(sizeof(Lista));
-    novo_elemento->info = info;
+  while (aux && aux->info < info) {
+    if(aux->prox == *lista) break;
 
-    // Significa que o primeiro elemento da lista e maior que o recebido na funcao
-    // Portanto, ira fazer uma insercao no inicio
-    if(!elemento_anterior) {
-      novo_elemento->prox = *lista;
-      *lista = novo_elemento;
-      return 1;
-    }
+    elemento_anterior = aux;
+    aux = aux->prox;
+  }
 
-    novo_elemento->prox = elemento_anterior->prox;
-    elemento_anterior->prox = novo_elemento;
+  // Cria novo elemento e atribui o valor recebido na funcao com parametro
+  novo_elemento = (Lista*) malloc(sizeof(Lista));
+  novo_elemento->info = info;
+
+  // Significa que o primeiro elemento da lista e maior que o recebido na funcao
+  // Portanto, ira fazer uma insercao no inicio
+  if(!elemento_anterior) {
+    novo_elemento->prox = *lista;
+    *lista = novo_elemento;
+    ultimo_elemento = novo_elemento;
     return 1;
   }
 
-  return 0;
+  novo_elemento->prox = elemento_anterior->prox;
+  elemento_anterior->prox = novo_elemento;
+  return 1;
 }
 
 #endif
