@@ -9,6 +9,5 @@ int pilha_push(Pilha *pilha, char caractere);
 char pilha_pop(Pilha *pilha);
 int pilha_vazia(Pilha *pilha);
 void pilha_libera(Pilha **pilha);
-int pilha_balanceada(Pilha *pilha, char *expressao);
 
 #endif

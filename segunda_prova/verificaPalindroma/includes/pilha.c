@@ -84,37 +84,4 @@ void pilha_libera(Pilha **pilha) {
   *pilha = NULL;
 }
 
-int pilha_balanceada(Pilha *pilha, char *expressao) {
-  int chaves = 0, colchetes = 0, parenteses = 0;
-  char elemento;
-
-  // Ira empilhar a expressao
-  for (int i = 0; i < strlen(expressao); i++) {
-    pilha_push(pilha, expressao[i]);
-  }
-
-  printf("%s\n", expressao);
-
-  // Ira desempilhar e analisar os caracteres
-  // A cada fechamento e somado um ao valor do caractere
-  // A cada fechamento ira subtrair 1
-  // Ao final de tudo todas as variaves terao que ser iguais a 0
-  while (pilha->topo) {
-    elemento = pilha_pop(pilha);
-
-    if(elemento == '}') chaves++;
-    else if(elemento == ']') colchetes++;
-    else if(elemento == ')') parenteses++;
-    else if(elemento == '{') chaves--;
-    else if(elemento == '[') colchetes--;
-    else if(elemento == '(') parenteses--;
-
-    // Retorna caso algum valor negativo
-    // O valor sera negativo se houve uma abertura antes do fechamento
-    if(chaves < 0 || colchetes < 0 || parenteses< 0) return 0;
-  }
-  
-  return 1;
-}
-
 #endif
