@@ -66,6 +66,7 @@ void imprime(ArvoreNo *raiz) {
 
 void arv_imprime(Arvore *arvore_principal) {
   imprime(arvore_principal->raiz);
+  printf("\n");
 }
 
 // Pre-ordem
